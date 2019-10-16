@@ -44,15 +44,15 @@
 /* Unused arguments generate annoying warnings... */
 #define DICT_NOTUSED(V) ((void) V)
 
-typedef struct dictEntry {
-    void *key;
-    union {
+typedef struct dictEntry {      // 哈希节点
+    void *key;      // 键
+    union {     // 值
         void *val;
         uint64_t u64;
         int64_t s64;
         double d;
     } v;
-    struct dictEntry *next;
+    struct dictEntry *next;     // 解决键冲突
 } dictEntry;
 
 typedef struct dictType {
@@ -66,19 +66,19 @@ typedef struct dictType {
 
 /* This is our hash table structure. Every dictionary has two of this as we
  * implement incremental rehashing, for the old to the new table. */
-typedef struct dictht {
-    dictEntry **table;
-    unsigned long size;
-    unsigned long sizemask;
-    unsigned long used;
+typedef struct dictht {     // 字段所使用的哈希表
+    dictEntry **table;      // 哈希表数组
+    unsigned long size;     // 哈希表大小
+    unsigned long sizemask;     // 哈希表大小掩码，勇于计算索引值 ，总是等于size-1
+    unsigned long used;     // 已有节点数量
 } dictht;
 
-typedef struct dict {
-    dictType *type;
-    void *privdata;
-    dictht ht[2];
-    long rehashidx; /* rehashing not in progress if rehashidx == -1 */
-    unsigned long iterators; /* number of iterators currently running */
+typedef struct dict {       // 字典
+    dictType *type;     // 类型特定函数，创建多态字典而设置
+    void *privdata;     // 私有数据，创建多态字典而设置
+    dictht ht[2];       // 哈希表
+    long rehashidx; /* rehashing not in progress if rehashidx == -1 */      // rehash索引
+    unsigned long iterators; /* number of iterators currently running */        // 正在运行中的遍历器数量
 } dict;
 
 /* If safe is set to 1 this is a safe iterator, that means, you can call

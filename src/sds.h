@@ -40,19 +40,19 @@ const char *SDS_NOINIT;
 #include <stdarg.h>
 #include <stdint.h>
 
-typedef char *sds;
+typedef char *sds;      // char buf[] 的指针
 
 /* Note: sdshdr5 is never used, we just access the flags byte directly.
  * However is here to document the layout of type 5 SDS strings. */
 struct __attribute__ ((__packed__)) sdshdr5 {
-    unsigned char flags; /* 3 lsb of type, and 5 msb of string length */
+    unsigned char flags; /* 3 lsb of type, and 5 msb of string length */        // 标示五种类型的sds对象
     char buf[];
 };
 struct __attribute__ ((__packed__)) sdshdr8 {
     uint8_t len; /* used */
-    uint8_t alloc; /* excluding the header and null terminator */
-    unsigned char flags; /* 3 lsb of type, 5 unused bits */
-    char buf[];
+    uint8_t alloc; /* excluding the header and null terminator */       // 未使用的内存
+    unsigned char flags; /* 3 lsb of type, 5 unused bits */     // 标示五种类型的sds对象
+    char buf[];     // 保存字符串数据
 };
 struct __attribute__ ((__packed__)) sdshdr16 {
     uint16_t len; /* used */

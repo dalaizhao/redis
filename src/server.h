@@ -654,8 +654,8 @@ typedef struct RedisModuleDigest {
 #define OBJ_ENCODING_RAW 0     /* Raw representation */
 #define OBJ_ENCODING_INT 1     /* Encoded as integer */
 #define OBJ_ENCODING_HT 2      /* Encoded as hash table */
-#define OBJ_ENCODING_ZIPMAP 3  /* Encoded as zipmap */
-#define OBJ_ENCODING_LINKEDLIST 4 /* No longer used: old list encoding. */
+#define OBJ_ENCODING_ZIPMAP 3  /* Encoded as zipmap */      // 是个旧的表示方式，已不再用。在小于Redis 2.6的版本中才有。
+#define OBJ_ENCODING_LINKEDLIST 4 /* No longer used: old list encoding. */      // 不再使用
 #define OBJ_ENCODING_ZIPLIST 5 /* Encoded as ziplist */
 #define OBJ_ENCODING_INTSET 6  /* Encoded as intset */
 #define OBJ_ENCODING_SKIPLIST 7  /* Encoded as skiplist */
@@ -669,13 +669,13 @@ typedef struct RedisModuleDigest {
 
 #define OBJ_SHARED_REFCOUNT INT_MAX
 typedef struct redisObject {
-    unsigned type:4;
-    unsigned encoding:4;
+    unsigned type:4;        // 对外数据类型
+    unsigned encoding:4;        // 内部数据类型
     unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
                             * LFU data (least significant 8 bits frequency
                             * and most significant 16 bits access time). */
-    int refcount;
-    void *ptr;
+    int refcount;       // 引用计数，某些情况下允许共享对象
+    void *ptr;      // 数组指针
 } robj;
 
 /* The a string name for an object's type as listed above
@@ -920,20 +920,20 @@ struct sharedObjectsStruct {
 };
 
 /* ZSETs use a specialized version of Skiplists */
-typedef struct zskiplistNode {
-    sds ele;
-    double score;
+typedef struct zskiplistNode {      // 跳跃表节点
+    sds ele;        // 成员对象，sds
+    double score;       // 分值
     struct zskiplistNode *backward;
     struct zskiplistLevel {
-        struct zskiplistNode *forward;
-        unsigned long span;
-    } level[];
+        struct zskiplistNode *forward;  // 前进指针
+        unsigned long span;     // 跨度
+    } level[];      // 层级
 } zskiplistNode;
 
-typedef struct zskiplist {
+typedef struct zskiplist {      // 跳跃表
     struct zskiplistNode *header, *tail;
     unsigned long length;
-    int level;
+    int level;      // 记录跳跃表内，层数最大的那个节点的层数，表头节点不计算在内
 } zskiplist;
 
 typedef struct zset {
