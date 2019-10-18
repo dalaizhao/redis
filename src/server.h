@@ -671,10 +671,10 @@ typedef struct RedisModuleDigest {
 typedef struct redisObject {
     unsigned type:4;        // 对外数据类型
     unsigned encoding:4;        // 内部数据类型
-    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
-                            * LFU data (least significant 8 bits frequency
-                            * and most significant 16 bits access time). */
-    int refcount;       // 引用计数，某些情况下允许共享对象
+    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or        // 该属性记录了对象最后一次被命令程序访问的时间
+                            * LFU data (least significant 8 bits frequency      // 回收内存算法为volatile-lru或allkeys-lru，
+                            * and most significant 16 bits access time). */     // 服务器内存数超过maxmemory时，空转较长的优先被释放
+    int refcount;       // 引用计数，某些情况下允许共享对象，redis只对包含整数值的字符串对象进行共享
     void *ptr;      // 数组指针
 } robj;
 
@@ -706,16 +706,16 @@ typedef struct clientReplyBlock {
 /* Redis database representation. There are multiple databases identified
  * by integers from 0 (the default database) up to the max configured
  * database. The database number is the 'id' field in the structure. */
-typedef struct redisDb {
-    dict *dict;                 /* The keyspace for this DB */
-    dict *expires;              /* Timeout of keys with a timeout set */
+typedef struct redisDb {        // 表示数据库结构
+    dict *dict;                 /* The keyspace for this DB */      // 数据键空间
+    dict *expires;              /* Timeout of keys with a timeout set */        //  保存了所有键的过期时间
     dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
     dict *ready_keys;           /* Blocked keys that received a PUSH */
     dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
     int id;                     /* Database ID */
     long long avg_ttl;          /* Average TTL, just for stats */
     list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
-} redisDb;
+} redisDb;      // 所有数据的键值对
 
 /* Client MULTI/EXEC state */
 typedef struct multiCmd {
@@ -824,7 +824,7 @@ typedef struct user {
 
 /* With multiplexing we need to take per-client state.
  * Clients are taken in a linked list. */
-typedef struct client {
+typedef struct client {     // 客户端状态
     uint64_t id;            /* Client incremental unique ID. */
     int fd;                 /* Client socket. */
     int resp;               /* RESP protocol version. Can be 2 or 3. */
@@ -1051,7 +1051,7 @@ struct clusterState;
 #define CHILD_INFO_TYPE_AOF 1
 #define CHILD_INFO_TYPE_MODULE 3
 
-struct redisServer {
+struct redisServer {        // 服务器保存了所有数据库的状态
     /* General */
     pid_t pid;                  /* Main process pid. */
     char *configfile;           /* Absolute config file path, or NULL */
@@ -1062,7 +1062,7 @@ struct redisServer {
                                    the actual 'hz' field value if dynamic-hz
                                    is enabled. */
     int hz;                     /* serverCron() calls frequency in hertz */
-    redisDb *db;
+    redisDb *db;        // 保存着服务器的所有数据库
     dict *commands;             /* Command table */
     dict *orig_commands;        /* Command table before command renaming. */
     aeEventLoop *el;
@@ -1182,7 +1182,7 @@ struct redisServer {
     int active_defrag_cycle_max;       /* maximal effort for defrag in CPU percentage */
     unsigned long active_defrag_max_scan_fields; /* maximum number of fields of set/hash/zset/list to process from within the main dict scan */
     _Atomic size_t client_max_querybuf_len; /* Limit for client query buffer length */
-    int dbnum;                      /* Total number of configured DBs */
+    int dbnum;                      /* Total number of configured DBs */        // 默认16个
     int supervised;                 /* 1 if supervised, 0 otherwise. */
     int supervised_mode;            /* See SUPERVISED_* */
     int daemonize;                  /* True if running as a daemon */

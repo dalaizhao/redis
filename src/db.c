@@ -1210,7 +1210,7 @@ int keyIsExpired(redisDb *db, robj *key) {
  *
  * The return value of the function is 0 if the key is still valid,
  * otherwise the function returns 1 if the key is expired. */
-int expireIfNeeded(redisDb *db, robj *key) {
+int expireIfNeeded(redisDb *db, robj *key) {        // 惰性删除策略，所有redis命令执行之前会进行过期检查函数
     if (!keyIsExpired(db,key)) return 0;
 
     /* If we are running in the context of a slave, instead of
