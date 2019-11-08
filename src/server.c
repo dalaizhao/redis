@@ -1771,7 +1771,7 @@ void updateCachedTime(void) {
  * a macro is used: run_with_period(milliseconds) { .... }
  */
 
-int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {
+int serverCron(struct aeEventLoop *eventLoop, long long id, void *clientData) {     // 时间事件函数
     int j;
     UNUSED(eventLoop);
     UNUSED(id);
