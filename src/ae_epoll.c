@@ -30,13 +30,18 @@
 
 
 #include <sys/epoll.h>
+#include "ae.h"
+#include "zmalloc.h"
 
+/**
+ * 事件状态
+ */
 typedef struct aeApiState {
-    int epfd;
+    int epfd;       // 描述符
     struct epoll_event *events;
 } aeApiState;
 
-static int aeApiCreate(aeEventLoop *eventLoop) {
+static int aeApiCreate(aeEventLoop *eventLoop) {        // 创建新的epoll
     aeApiState *state = zmalloc(sizeof(aeApiState));
 
     if (!state) return -1;
@@ -51,11 +56,11 @@ static int aeApiCreate(aeEventLoop *eventLoop) {
         zfree(state);
         return -1;
     }
-    eventLoop->apidata = state;
+    eventLoop->apidata = state;     // 放到事件循环处理中
     return 0;
 }
 
-static int aeApiResize(aeEventLoop *eventLoop, int setsize) {
+static int aeApiResize(aeEventLoop *eventLoop, int setsize) {    //
     aeApiState *state = eventLoop->apidata;
 
     state->events = zrealloc(state->events, sizeof(struct epoll_event)*setsize);
