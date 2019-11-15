@@ -68,7 +68,7 @@ typedef void aeEventFinalizerProc(struct aeEventLoop *eventLoop, void *clientDat
 typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 
 /* File event structure */
-typedef struct aeFileEvent {
+typedef struct aeFileEvent {        //事件处理数据结构
     int mask; /* one of AE_(READABLE|WRITABLE|BARRIER) */
     aeFileProc *rfileProc;
     aeFileProc *wfileProc;
@@ -94,14 +94,14 @@ typedef struct aeFiredEvent {
 } aeFiredEvent;
 
 /* State of an event based program */
-typedef struct aeEventLoop {
+typedef struct aeEventLoop {        // 事件处理器
     int maxfd;   /* highest file descriptor currently registered */
     int setsize; /* max number of file descriptors tracked */
     long long timeEventNextId;
     time_t lastTime;     /* Used to detect system clock skew */
-    aeFileEvent *events; /* Registered events */
-    aeFiredEvent *fired; /* Fired events */
-    aeTimeEvent *timeEventHead;
+    aeFileEvent *events; /* Registered events */        // 未就绪文件事件表
+    aeFiredEvent *fired; /* Fired events */     // 就绪文件事件表，文件事件处理器会以有序、同步、单个套接字的方式处理该队列中的套接字，也就是处理就绪的文件事件。
+    aeTimeEvent *timeEventHead;     // 时间事件列表
     int stop;
     void *apidata; /* This is used for polling API specific data */
     aeBeforeSleepProc *beforesleep;
